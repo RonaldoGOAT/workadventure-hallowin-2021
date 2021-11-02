@@ -24,7 +24,7 @@ let currentPopup: any;
 const config = [
     {
         zone: 'HalloWIN2022',
-        message: 'Much more for #HalloWIN 2022.',
+        message: 'See you for #HalloWIN 2022. You are not ready.',
         cta: [
             {
                 label: 'I\'ll be there.',
