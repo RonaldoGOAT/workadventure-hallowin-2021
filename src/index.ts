@@ -1,22 +1,61 @@
 /// <reference path="../node_modules/@workadventure/iframe-api-typings/iframe_api.d.ts" />
+import {bootstrapExtra} from '@workadventure/scripting-api-extra'
 
-import {bootstrapExtra} from "@workadventure/scripting-api-extra";
+console.log('Script started successfully');
 
-// The line below bootstraps the Scripting API Extra library that adds a number of advanced properties/features to WorkAdventure.
-bootstrapExtra().catch(e => console.error(e));
+async function extendedFeatures() {
+    try {
+        await bootstrapExtra()
+        console.log('Scripting API Extra loaded successfully');
+    } catch (error) {
+        console.error('Scripting API Extra ERROR',error);
+    }
+}
+extendedFeatures();
 
-let currentPopup: any = undefined;
-const today = new Date();
-const time = today.getHours() + ":" + today.getMinutes();
+// Manage the animations
+//WA.room.onEnterZone('animateItem', () => WA.room.hideLayer('staticItem'));
+//WA.room.onLeaveZone('animateItem', () => WA.room.showLayer('staticItem'));
 
-WA.room.onEnterZone('clock', () => {
-    currentPopup =  WA.ui.openPopup("clockPopup","It's " + time,[]);
-})
+// Manage popups
+let currentZone: string;
+let currentPopup: any;
 
-WA.room.onLeaveZone('clock', closePopUp)
+const config = [
+    {
+        zone: 'HalloWIN2022',
+        message: 'Much more for #HalloWIN 2022.',
+        cta: [
+            {
+                label: 'I\'ll be there.',
+                className: 'error',
+                callback: () => closePopup(),
+            }
+        ]
+    }
+]
 
-function closePopUp(){
-    if (currentPopup !== undefined) {
+// hallowin 2022 popup
+WA.room.onEnterZone('HalloWIN2022', () => {
+    openPopup('HalloWIN2022')
+});
+WA.room.onLeaveZone('HalloWIN2022', closePopup);
+
+// Popup management functions
+function openPopup(zoneName: string) {
+    currentZone = zoneName
+    const popupName = zoneName + 'Popup'
+    const zone = config.find((item) => {
+        return item.zone == zoneName
+    });
+
+    if (typeof zone !== 'undefined') {
+        // @ts-ignore otherwise we can't use zone.cta object
+        currentPopup = WA.ui.openPopup(popupName, zone.message, zone.cta)
+    }
+}
+function closePopup(){
+    if (typeof currentPopup !== 'undefined') {
         currentPopup.close();
         currentPopup = undefined;
     }
